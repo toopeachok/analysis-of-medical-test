@@ -1,48 +1,71 @@
 *********************
 Statistics for Complete test results
+
 Female quantity: 63
 Male quantity: 35
 Median of age: 45
 Mode of age: 30
+
+"Type"	"Frequency"
+"Anemia"	13
+"Deficit"	16
+"Healthy"	28
+"Inflammation"	16
+"Thrombosis"	25
 *********************
 Statistics for Empty HCT
+
 Female quantity: 4
 Male quantity: 1
 Median of age: 58
 Mode of age: 34
+
+"Type"	"Frequency"
+"Anemia"	1
+"Deficit"	2
+"Healthy"	2
 *********************
 Statistics for Empty HGB
+
 Female quantity: 0
 Male quantity: 3
 Median of age: 57
 Mode of age: 60
+
+"Type"	"Frequency"
+"Inflammation"	3
 *********************
 Statistics for Empty LYM
+
 Female quantity: 3
 Male quantity: 2
 Median of age: 57
 Mode of age: 57
-*********************
-Statistics for Empty MCV
-Female quantity: 0
-Male quantity: 0
-Median of age: NA
-Mode of age: NA
+
+"Type"	"Frequency"
+"Anemia"	1
+"Deficit"	1
+"Healthy"	2
+"Inflammation"	1
 *********************
 Statistics for Empty PLT
+
 Female quantity: 0
 Male quantity: 1
 Median of age: 60
 Mode of age: 60
+
+"Type"	"Frequency"
+"Inflammation"	1
 *********************
 Statistics for Empty RBC
+
 Female quantity: 3
 Male quantity: 0
 Median of age: 58
 Mode of age: 58
-*********************
-Statistics for Empty WBC
-Female quantity: 0
-Male quantity: 0
-Median of age: NA
-Mode of age: NA
+
+"Type"	"Frequency"
+"Deficit"	1
+"Healthy"	1
+"Thrombosis"	1
