@@ -1,0 +1,70 @@
+library(dplyr)
+rowData <-
+  read.csv(file = '/home/toopeachok/Documents/homeworks-R/MedicalDataAnalysis/test_results.csv')
+
+completeTestResults = rowData %>%
+  filter_at(vars(colnames(rowData[, 4:10])), all_vars(!is.na(.)))
+
+emptyWBC = rowData[which(is.na(rowData$WBC)), ]
+emptyRBC = rowData[which(is.na(rowData$RBC)), ]
+emptyHGB = rowData[which(is.na(rowData$HGB)), ]
+emptyHCT = rowData[which(is.na(rowData$HCT)), ]
+emptyPLT = rowData[which(is.na(rowData$PLT)), ]
+emptyLYM = rowData[which(is.na(rowData$LYM)), ]
+emptyMCV = rowData[which(is.na(rowData$MCV)), ]
+
+# Statistics
+getmode <- function(v) {
+  uniqv <- unique(v)
+  uniqv[which.max(tabulate(match(v, uniqv)))]
+}
+
+getStatistics <- function(data, label) {
+  sink(
+    paste(
+      "/home/toopeachok/Documents/homeworks-R/MedicalDataAnalysis/statistics.txt"
+    ),
+    TRUE
+  )
+  cat(paste("*********************"), sep = "\n")
+  cat(paste("Statistics for", label), sep = "\n")
+  cat(paste("Female quantity:", length(which(
+    data$gender == "female"
+  ))), sep = "\n")
+  cat(paste("Male quantity:", length(which(
+    data$gender == "male"
+  ))), sep = "\n")
+  cat(paste("Median of age:", median(data$age)), sep = "\n")
+  cat(paste("Mode of age:", getmode(data$age)), sep = "\n")
+  sink()
+}
+
+getStatistics(completeTestResults, "Complete test results")
+getStatistics(emptyHCT, "Empty HCT")
+getStatistics(emptyHGB, "Empty HGB")
+getStatistics(emptyLYM, "Empty LYM")
+getStatistics(emptyMCV, "Empty MCV")
+getStatistics(emptyPLT, "Empty PLT")
+getStatistics(emptyRBC, "Empty RBC")
+getStatistics(emptyWBC, "Empty WBC")
+
+# Plots
+pdf("/home/toopeachok/Documents/homeworks-R/MedicalDataAnalysis/plots.pdf")
+# Complete test results
+hist(completeTestResults$age)
+# WBC
+hist(emptyWBC$age)
+# RBC
+hist(emptyRBC$age)
+# HGB
+hist(emptyHGB$age)
+# HCT
+hist(emptyHCT$age)
+# PLT
+hist(emptyPLT$age)
+# LYM
+hist(emptyLYM$age)
+# MCV
+hist(emptyMCV$age)
+
+dev.off()
