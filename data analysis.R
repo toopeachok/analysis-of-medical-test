@@ -1,5 +1,5 @@
 library(dplyr)
-rowData <-
+rowData =
   read.csv(file = '/home/toopeachok/Documents/homeworks-R/MedicalDataAnalysis/test_results.csv')
 
 completeTestResults = rowData %>%
@@ -14,12 +14,12 @@ emptyLYM = rowData[which(is.na(rowData$LYM)),]
 emptyMCV = rowData[which(is.na(rowData$MCV)),]
 
 # Statistics
-getmode <- function(v) {
-  uniqv <- unique(v)
+getmode = function(v) {
+  uniqv = unique(v)
   uniqv[which.max(tabulate(match(v, uniqv)))]
 }
 
-getStatistics <- function(data, label) {
+getStatistics = function(data, label) {
   if (nrow(data) > 0) {
     sink(
       paste(
@@ -82,3 +82,35 @@ hist(emptyLYM$age)
 hist(emptyMCV$age)
 
 dev.off()
+
+# Filled data
+fillData = function(rowData, analysisType) {
+  filledData = data.frame(rowData)
+  for (i in row.names(rowData[which(is.na(rowData[[analysisType]])),])) {
+    sampleData = rowData[which(
+      !is.na(rowData[[analysisType]]) &
+        abs(rowData$age - rowData[i,]$age) <= 5 &
+        rowData$gender == rowData[i, ]$gender &
+        rowData$Type == rowData[i, ]$Type
+    ), ]
+    print(sampleData)
+    print("-----------------")
+    if (nrow(sampleData) > 0) {
+      filledData[i, ][[analysisType]] = median(sampleData[[analysisType]])
+    }
+  }
+  
+  return(filledData)
+}
+
+analysisTypes = c("HCT", "HGB", "LYM", "MCV", "PLT", "RBC", "WBC")
+filledData = data.frame(rowData)
+for (analysisType in analysisTypes) {
+  filledData = data.frame(fillData(filledData, analysisType))
+}
+
+write.csv(
+  filledData,
+  "/home/toopeachok/Documents/homeworks-R/MedicalDataAnalysis/filled_test_results.csv",
+  row.names = FALSE
+)
