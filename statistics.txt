@@ -1,52 +1,49 @@
- ********************* 
- Statistics for RBC 
- Female quantity: 3 
- Male quantity: 0 
- Median of age: 58 
- Mode of age: 58 
- 
-"Type"	"Frequency"
-"Deficit"	1
-"Healthy"	1
-"Thrombosis"	1
- ********************* 
- Statistics for HGB 
- Female quantity: 0 
- Male quantity: 3 
- Median of age: 57 
- Mode of age: 60 
- 
-"Type"	"Frequency"
-"Inflammation"	3
- ********************* 
- Statistics for HCT 
- Female quantity: 4 
- Male quantity: 1 
- Median of age: 58 
- Mode of age: 34 
- 
-"Type"	"Frequency"
-"Anemia"	1
-"Deficit"	2
-"Healthy"	2
- ********************* 
- Statistics for PLT 
- Female quantity: 0 
- Male quantity: 1 
- Median of age: 60 
- Mode of age: 60 
- 
-"Type"	"Frequency"
-"Inflammation"	1
- ********************* 
- Statistics for LYM 
- Female quantity: 3 
- Male quantity: 2 
- Median of age: 57 
- Mode of age: 57 
- 
-"Type"	"Frequency"
-"Anemia"	1
-"Deficit"	1
-"Healthy"	2
-"Inflammation"	1
+*********************
+Statistics for RBC
+Gender	Frequency
+female	3
+Median of age: 58
+Mode of age: 58
+Type	Frequency
+Deficit	1
+Healthy	1
+Thrombosis	1
+*********************
+Statistics for HGB
+Gender	Frequency
+male	3
+Median of age: 57
+Mode of age: 60
+Type	Frequency
+Inflammation	3
+*********************
+Statistics for HCT
+Gender	Frequency
+female	4
+male	1
+Median of age: 58
+Mode of age: 34
+Type	Frequency
+Anemia	1
+Deficit	2
+Healthy	2
+*********************
+Statistics for PLT
+Gender	Frequency
+male	1
+Median of age: 60
+Mode of age: 60
+Type	Frequency
+Inflammation	1
+*********************
+Statistics for LYM
+Gender	Frequency
+female	3
+male	2
+Median of age: 57
+Mode of age: 57
+Type	Frequency
+Anemia	1
+Deficit	1
+Healthy	2
+Inflammation	1

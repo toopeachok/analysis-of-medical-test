@@ -1,6 +1,6 @@
 library(dplyr)
 rowData =
-  read.csv(file = '/home/toopeachok/Documents/homeworks-R/MedicalDataAnalysis/test_results.csv')
+  read.csv(file = "test_results.csv")
 
 analysisTypes = colnames(rowData[, 4:10])
 
@@ -15,18 +15,27 @@ getmode = function(v) {
 
 getStatistics = function(rowData,
                          analysisType,
-                         statisticsFileName = "/home/toopeachok/Documents/homeworks-R/MedicalDataAnalysis/statistics.txt") {
-  data = rowData[which(is.na(rowData[[analysisType]])), ]
+                         statisticsFileName = "statistics.txt") {
+  data = rowData[which(is.na(rowData[[analysisType]])),]
   
   if (nrow(data) > 0) {
+    resultStr = paste("*********************", "\n", sep = "")
+    resultStr = paste(resultStr, "Statistics for ", analysisType, "\n", sep = "")
+    cat(resultStr, file = statisticsFileName, append = TRUE)
     resultStr = ""
-    resultStr = paste(resultStr, "*********************", "\n")
-    resultStr = paste(resultStr, "Statistics for", analysisType, "\n")
-    resultStr = paste(resultStr, "Female quantity:", length(which(data$gender == "female")), "\n")
-    resultStr = paste(resultStr, "Male quantity:", length(which(data$gender == "male")), "\n")
-    resultStr = paste(resultStr, "Median of age:", median(data$age), "\n")
-    resultStr = paste(resultStr, "Mode of age:", getmode(data$age), "\n")
-    resultStr = paste(resultStr, "\n")
+    genderStatistics = as.data.frame(table(data$gender))
+    colnames(genderStatistics) = c("Gender", "Frequency")
+    write.table(
+      genderStatistics,
+      file = statisticsFileName,
+      append = TRUE,
+      quote = FALSE,
+      row.names = FALSE,
+      col.names = TRUE,
+      sep = "\t"
+    )
+    resultStr = paste(resultStr, "Median of age: ", median(data$age), "\n", sep = "")
+    resultStr = paste(resultStr, "Mode of age: ", getmode(data$age), "\n", sep = "")
     # Append Results To Text File
     cat(resultStr, file = statisticsFileName, append = TRUE)
     # Disease Statistics
@@ -37,6 +46,7 @@ getStatistics = function(rowData,
       typeTable,
       file = statisticsFileName,
       append = TRUE,
+      quote = FALSE,
       row.names = FALSE,
       col.names = TRUE,
       sep = "\t"
@@ -44,7 +54,7 @@ getStatistics = function(rowData,
   }
 }
 
-statisticsFileName = "/home/toopeachok/Documents/homeworks-R/MedicalDataAnalysis/statistics.txt"
+statisticsFileName = "statistics.txt"
 if (file.exists(statisticsFileName)) {
   file.remove(statisticsFileName)
 }
@@ -55,7 +65,7 @@ for (analysisType in analysisTypes) {
 
 # Plots
 drawHist = function(rowData, analysisType) {
-  data = rowData[which(is.na(rowData[[analysisType]])), ]
+  data = rowData[which(is.na(rowData[[analysisType]])),]
   if (nrow(data) > 0) {
     hist(data$age,
          main = paste("Histogram for", analysisType),
@@ -63,8 +73,8 @@ drawHist = function(rowData, analysisType) {
   }
 }
 
-pdf("/home/toopeachok/Documents/homeworks-R/MedicalDataAnalysis/plots.pdf")
-hist(completeTestResults$age, main = "Histogram for Complete test results", xlab = "age")
+pdf("plots.pdf")
+hist(completeTestResults$age, main = "Histogram for complete test results", xlab = "age")
 for (analysisType in analysisTypes) {
   drawHist(rowData, analysisType)
 }
@@ -74,15 +84,15 @@ dev.off()
 # Filled Data
 fillData = function(rowData, analysisType) {
   filledData = data.frame(rowData)
-  for (i in row.names(rowData[which(is.na(rowData[[analysisType]])), ])) {
+  for (i in row.names(rowData[which(is.na(rowData[[analysisType]])),])) {
     sampleData = rowData[which(
       !is.na(rowData[[analysisType]]) &
-        abs(rowData$age - rowData[i, ]$age) <= 5 &
-        rowData$gender == rowData[i,]$gender &
-        rowData$Type == rowData[i,]$Type
-    ),]
+        abs(rowData$age - rowData[i,]$age) <= 5 &
+        rowData$gender == rowData[i, ]$gender &
+        rowData$Type == rowData[i, ]$Type
+    ), ]
     if (nrow(sampleData) > 0) {
-      filledData[i,][[analysisType]] = median(sampleData[[analysisType]])
+      filledData[i, ][[analysisType]] = median(sampleData[[analysisType]])
     }
   }
   
@@ -94,8 +104,6 @@ for (analysisType in analysisTypes) {
   filledData = data.frame(fillData(filledData, analysisType))
 }
 
-write.csv(
-  filledData,
-  "/home/toopeachok/Documents/homeworks-R/MedicalDataAnalysis/filled_test_results.csv",
-  row.names = FALSE
-)
+write.csv(filledData,
+          "filled_test_results.csv",
+          row.names = FALSE)
