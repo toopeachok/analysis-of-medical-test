@@ -2,16 +2,10 @@ library(dplyr)
 rowData =
   read.csv(file = '/home/toopeachok/Documents/homeworks-R/MedicalDataAnalysis/test_results.csv')
 
-completeTestResults = rowData %>%
-  filter_at(vars(colnames(rowData[, 4:10])), all_vars(!is.na(.)))
+analysisTypes = colnames(rowData[, 4:10])
 
-emptyWBC = rowData[which(is.na(rowData$WBC)),]
-emptyRBC = rowData[which(is.na(rowData$RBC)),]
-emptyHGB = rowData[which(is.na(rowData$HGB)),]
-emptyHCT = rowData[which(is.na(rowData$HCT)),]
-emptyPLT = rowData[which(is.na(rowData$PLT)),]
-emptyLYM = rowData[which(is.na(rowData$LYM)),]
-emptyMCV = rowData[which(is.na(rowData$MCV)),]
+completeTestResults = rowData %>%
+  filter_at(vars(all_of(analysisTypes)), all_vars(!is.na(.)))
 
 # Statistics
 getmode = function(v) {
@@ -19,32 +13,29 @@ getmode = function(v) {
   uniqv[which.max(tabulate(match(v, uniqv)))]
 }
 
-getStatistics = function(data, label) {
+getStatistics = function(rowData,
+                         analysisType,
+                         statisticsFileName = "/home/toopeachok/Documents/homeworks-R/MedicalDataAnalysis/statistics.txt") {
+  data = rowData[which(is.na(rowData[[analysisType]])), ]
+  
   if (nrow(data) > 0) {
-    sink(
-      paste(
-        "/home/toopeachok/Documents/homeworks-R/MedicalDataAnalysis/statistics.txt"
-      ),
-      TRUE
-    )
-    cat(paste("*********************"), sep = "\n")
-    cat(paste("Statistics for", label), sep = "\n")
-    cat(paste("\n"))
-    cat(paste("Female quantity:", length(which(
-      data$gender == "female"
-    ))), sep = "\n")
-    cat(paste("Male quantity:", length(which(
-      data$gender == "male"
-    ))), sep = "\n")
-    cat(paste("Median of age:", median(data$age)), sep = "\n")
-    cat(paste("Mode of age:", getmode(data$age)), sep = "\n")
-    cat(paste("\n"))
-    sink()
+    resultStr = ""
+    resultStr = paste(resultStr, "*********************", "\n")
+    resultStr = paste(resultStr, "Statistics for", analysisType, "\n")
+    resultStr = paste(resultStr, "Female quantity:", length(which(data$gender == "female")), "\n")
+    resultStr = paste(resultStr, "Male quantity:", length(which(data$gender == "male")), "\n")
+    resultStr = paste(resultStr, "Median of age:", median(data$age), "\n")
+    resultStr = paste(resultStr, "Mode of age:", getmode(data$age), "\n")
+    resultStr = paste(resultStr, "\n")
+    # Append Results To Text File
+    cat(resultStr, file = statisticsFileName, append = TRUE)
+    # Disease Statistics
     typeTable = as.data.frame(table(data$Type))
     colnames(typeTable) = c("Type", "Frequency")
+    # Append Disease Statistics To Text File
     write.table(
       typeTable,
-      file = "/home/toopeachok/Documents/homeworks-R/MedicalDataAnalysis/statistics.txt",
+      file = statisticsFileName,
       append = TRUE,
       row.names = FALSE,
       col.names = TRUE,
@@ -53,57 +44,51 @@ getStatistics = function(data, label) {
   }
 }
 
-getStatistics(completeTestResults, "Complete test results")
-getStatistics(emptyHCT, "Empty HCT")
-getStatistics(emptyHGB, "Empty HGB")
-getStatistics(emptyLYM, "Empty LYM")
-getStatistics(emptyMCV, "Empty MCV")
-getStatistics(emptyPLT, "Empty PLT")
-getStatistics(emptyRBC, "Empty RBC")
-getStatistics(emptyWBC, "Empty WBC")
+statisticsFileName = "/home/toopeachok/Documents/homeworks-R/MedicalDataAnalysis/statistics.txt"
+if (file.exists(statisticsFileName)) {
+  file.remove(statisticsFileName)
+}
+
+for (analysisType in analysisTypes) {
+  getStatistics(rowData, analysisType)
+}
 
 # Plots
+drawHist = function(rowData, analysisType) {
+  data = rowData[which(is.na(rowData[[analysisType]])), ]
+  if (nrow(data) > 0) {
+    hist(data$age,
+         main = paste("Histogram for", analysisType),
+         xlab = "age")
+  }
+}
+
 pdf("/home/toopeachok/Documents/homeworks-R/MedicalDataAnalysis/plots.pdf")
-# Complete test results
-hist(completeTestResults$age)
-# WBC
-hist(emptyWBC$age)
-# RBC
-hist(emptyRBC$age)
-# HGB
-hist(emptyHGB$age)
-# HCT
-hist(emptyHCT$age)
-# PLT
-hist(emptyPLT$age)
-# LYM
-hist(emptyLYM$age)
-# MCV
-hist(emptyMCV$age)
+hist(completeTestResults$age, main = "Histogram for Complete test results", xlab = "age")
+for (analysisType in analysisTypes) {
+  drawHist(rowData, analysisType)
+}
 
 dev.off()
 
-# Filled data
+# Filled Data
 fillData = function(rowData, analysisType) {
   filledData = data.frame(rowData)
-  for (i in row.names(rowData[which(is.na(rowData[[analysisType]])),])) {
+  for (i in row.names(rowData[which(is.na(rowData[[analysisType]])), ])) {
     sampleData = rowData[which(
       !is.na(rowData[[analysisType]]) &
-        abs(rowData$age - rowData[i,]$age) <= 5 &
-        rowData$gender == rowData[i, ]$gender &
-        rowData$Type == rowData[i, ]$Type
-    ), ]
-    print(sampleData)
-    print("-----------------")
+        abs(rowData$age - rowData[i, ]$age) <= 5 &
+        rowData$gender == rowData[i,]$gender &
+        rowData$Type == rowData[i,]$Type
+    ),]
     if (nrow(sampleData) > 0) {
-      filledData[i, ][[analysisType]] = median(sampleData[[analysisType]])
+      filledData[i,][[analysisType]] = median(sampleData[[analysisType]])
     }
   }
   
   return(filledData)
 }
 
-analysisTypes = c("HCT", "HGB", "LYM", "MCV", "PLT", "RBC", "WBC")
 filledData = data.frame(rowData)
 for (analysisType in analysisTypes) {
   filledData = data.frame(fillData(filledData, analysisType))
