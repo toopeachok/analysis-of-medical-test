@@ -1,6 +1,6 @@
+library(ggplot2)
 library(dplyr)
-rowData =
-  read.csv(file = "test_results.csv")
+rowData = read.csv(file = "test_results.csv")
 
 analysisTypes = colnames(rowData[, 4:10])
 
@@ -104,6 +104,35 @@ for (analysisType in analysisTypes) {
   filledData = data.frame(fillData(filledData, analysisType))
 }
 
-write.csv(filledData,
-          "filled_test_results.csv",
-          row.names = FALSE)
+write.csv(filledData, "filled_test_results.csv", row.names = FALSE)
+
+# Comparison With Norms
+norms = read.csv(file = "norms.csv")
+# To get proper structure we can just copy filled data
+# Later we will put actual delta values
+deltaNorms = data.frame(filledData)
+
+getNormDelta = function(norms, analysisType, value) {
+  delta = 0
+  # norms is a data frame with two rows
+  # norms[2, ] upper limit of the norm
+  # norms[1, ] bottom
+  if (value > norms[2, analysisType]) {
+    delta  = value - norms[2, analysisType]
+  } else if (value < norms[1, analysisType]) {
+    delta = value - norms[1, analysisType]
+  }
+  return(delta)
+}
+
+for (i in row.names(deltaNorms)) {
+  for (analysisType in analysisTypes) {
+    delta = NA
+    value = deltaNorms[i, analysisType]
+    if (!is.na(value)) {
+      currentNorms = norms %>% filter(gender == deltaNorms[i, "gender"])
+      delta = getNormDelta(currentNorms, analysisType, value)
+    }
+    deltaNorms[i, analysisType] = delta
+  }
+}
